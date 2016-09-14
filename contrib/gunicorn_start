@@ -1,0 +1,29 @@
+#!/bin/bash
+
+NAME="texaco"
+APP_DIR=/webapps/texaco/texaco
+SOCKFILE=/webapps/texaco/run/gunicorn.sock
+USER=texaco
+GROUP=webapps
+NUM_WORKERS=3
+
+echo "Starting $NAME as `whoami`"
+
+# Activate the virtual environment
+cd $APP_DIR
+source ../env/bin/activate
+export PYTHONPATH=$APP_DIR:$PYTHONPATH
+
+# Create the run directory if it doesn't exist
+RUNDIR=$(dirname $SOCKFILE)
+test -d $RUNDIR || mkdir -p $RUNDIR
+
+# Start your Django Unicorn
+# Programs meant to be run under supervisor should not daemonize themselves (do not use --daemon)
+exec ../env/bin/gunicorn run:app \
+  --name $NAME \
+  --workers $NUM_WORKERS \
+  --user=$USER --group=$GROUP \
+  --bind=unix:$SOCKFILE \
+  --log-level=debug \
+  --log-file=-

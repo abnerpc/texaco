@@ -1,0 +1,48 @@
+{% extends "layout.html" %}
+
+{% block content %}
+
+    {% if not results %}
+    
+        <h1 class="cover-heading">Input the file:</h1>
+        
+        <form method="POST" action="/" enctype="multipart/form-data">
+            {{ form.csrf_token }}
+            <p class="lead">
+                <label class="btn btn-default btn-file" for="upload">
+                    <input id="upload" name="upload" type="file" style="display:none;">
+                    Browse
+                </label>
+                <span class='label label-default' id="upload-file-info"></span>
+                {% if form.errors.upload %}
+                    <div id="errors" class="errors">
+                        {% for error in form.errors.upload %}
+                          <p>{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </p>
+
+            <p class="lead">
+                <input class="btn btn-primary" type="submit" value="Process File">
+            </p>
+
+        </form>
+    
+    {% else %}
+    
+        <p class="lead">
+            <textarea class="textarea-terminal" rows="22" columns="40" readonly>
+                {%- for value in results -%}
+                    {{ loop.index }}.&nbsp;{{ value }}&#10;
+                {%- endfor -%}
+            </textarea>
+        </p>
+    
+    {% endif %}
+
+{% endblock %}
+
+{% block js %}
+    <script src="{{ url_for('static', filename='js/index.js') }}"></script>
+{% endblock %}
